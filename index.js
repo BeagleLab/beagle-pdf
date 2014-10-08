@@ -1,7 +1,5 @@
-var pdfjsDist = require('pdfjs-dist');
+var pdfjs = require('./pdfjs-dist/build/pdf.js');
 
-console.log(pdfjsDist);
+console.log(pdfjs);
 
-// pdfsjs.getDocument(url).then(function (pdf) {
-//   console.log(pdf.getPage(1));
-// });
+exports.pdfjs = pdfjs;

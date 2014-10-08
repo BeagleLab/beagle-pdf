@@ -1,10 +1,10 @@
 {
-  "name": "beagle-pdf-title",
+  "name": "beagle-pdf",
   "version": "0.0.0",
   "description": "Parse the title of a pdf",
   "main": "index.js",
   "scripts": {
-    "test": "node ./spec/beagle-pdf-title.tests.js"
+    "test": "node ./spec/beagle-pdf.tests.js"
   },
   "keywords": [
     "beagle"
