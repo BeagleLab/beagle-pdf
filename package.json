@@ -12,6 +12,15 @@
   "author": "Richard Littauer <richard.littauer@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "pdfjs-dist": "^1.0.828"
-  }
+    "pdfjs-dist-for-node": "^1.0.893"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BeagleLab/beagle-pdf.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BeagleLab/beagle-pdf/issues"
+  },
+  "homepage": "https://github.com/BeagleLab/beagle-pdf"
 }
