@@ -1,9 +1,6 @@
-var pdfjs = require('pdfjs-dist-for-node');
+var pdfjs = require('pdfjs-dist-for-node/build/pdf.combined.js');
 var altmetrics = require('../beagle-altmetrics');
 var accum = require('accum-transform');
-
-
-console.log('Here', pdfjs);
 
 var readPDF = function(documentObject) {
 

@@ -1,4 +1,4 @@
-beagle-pdf-metadata
+beagle-pdf
 ===================
 
-Grab the metadata from a pdf
+Grab the pdf
