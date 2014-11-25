@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^2.4.1",
+    "accum-transform": "^1.0.2",
     "pdfjs-dist-for-node": "^1.0.893"
   },
   "devDependencies": {},
