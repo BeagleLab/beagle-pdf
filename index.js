@@ -24,7 +24,8 @@ var readPDF = function(documentObject, cb) {
     var response, pageInfo, doi, match;
     // The most robust RegExp for doi matching I could find and edit for javascript
     var myRe = new RegExp('doi\\:(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?!["&\'<>])\\S)+)(\\.[a-zA-Z]{1}[0-9]{3})', 'g');
-    for (i = 0; i <= numPages; i++) {
+
+    for (i = 1; i <= numPages; i++) {
       pdf.getPage(i).then(function(page) {   
         page.getTextContent().then(function(textContent) {
           _.each(textContent.items, function(item){
