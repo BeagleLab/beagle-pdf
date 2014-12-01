@@ -1,23 +1,19 @@
 var pdfjs = require('pdfjs-dist-for-node/build/pdf.combined.js');
-var altmetrics = require('../beagle-altmetrics');
+var altmetrics = require('beagle-altmetrics');
 var accum = require('accum-transform');
 var _ = require('lodash');
 
-var readPDF = function(documentObject) {
-
-  console.log('Inside pdf module');
+var readPDF = function(documentObject, cb) {
 
   if (!documentObject) {
     console.log("No pdf");
     throw new Error("no pdf"); 
   }
 
-  console.log('Document object', documentObject);
+  // console.log('Document object', documentObject);
 
   pdfjs.getDocument(documentObject).then(function(pdf) {
     
-    console.log('This works');
-
     //May not be useful at the moment.
     pdf.getMetadata().then(function(data){
       console.log('Metadata:', data);
@@ -30,7 +26,6 @@ var readPDF = function(documentObject) {
     var myRe = new RegExp('doi\\:(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?!["&\'<>])\\S)+)(\\.[a-zA-Z]{1}[0-9]{3})', 'g');
     for (i = 0; i <= numPages; i++) {
       pdf.getPage(i).then(function(page) {   
-        console.log(page.status);
         page.getTextContent().then(function(textContent) {
           _.each(textContent.items, function(item){
             // TODO match[2] tracks .t001, .g001, etc. Capture these, they may be relevant
@@ -47,16 +42,15 @@ var readPDF = function(documentObject) {
                     process.exit(-1); 
                   }
 
-                  console.log(data);
-
-                  return data;
+                  console.log('Data:', data);
+                  return cb(null, data);
                 });
                 response = true;
               }
             }
           });
         });
-      }); //jshint ignore:line
+      });
     }
   });
 };
