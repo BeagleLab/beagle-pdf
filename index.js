@@ -2,8 +2,26 @@ var pdfjs = require('pdfjs-dist-for-node/build/pdf.combined.js');
 var altmetrics = require('beagle-altmetrics');
 var accum = require('accum-transform');
 var _ = require('lodash');
+var doiRegex = require('doi-regex')
 
-var readPDF = function(documentObject, cb) {
+var altmetricsFromDoi = function(doi, cb) {
+  response = true;
+  return altmetrics.getDataFromDoi(doi, function(err, data){
+    if (err !== null) {
+      console.error(err);
+      // What does process do?
+      process.exit(-1); 
+    }
+
+    console.log('Data:', data);
+    return cb(null, data);
+  });
+}
+
+var response;
+
+var readPDF = function(documentObject, options, cb) {
+
 
   if (!documentObject) {
     console.log("No pdf");
@@ -21,9 +39,7 @@ var readPDF = function(documentObject, cb) {
 
     numPages = pdf.numPages;
     // Define vars where they won't be redefined in each loop in if statements
-    var response, pageInfo, doi, match;
-    // The most robust RegExp for doi matching I could find and edit for javascript
-    var myRe = new RegExp('doi\\:(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?!["&\'<>])\\S)+)(\\.[a-zA-Z]{1}[0-9]{3})', 'g');
+    var pageInfo, doi, match;
 
     for (i = 1; i <= numPages; i++) {
       pdf.getPage(i).then(function(page) {   
@@ -31,22 +47,15 @@ var readPDF = function(documentObject, cb) {
           _.each(textContent.items, function(item){
             // TODO match[2] tracks .t001, .g001, etc. Capture these, they may be relevant
             // to research. 
-            match = myRe.exec(item.str);
+            if (!!doiRegex.groups(item.str))
+              match = doiRegex.groups(item.str)
+
             if (match && !response) {
               if (!doi) {
                 // Only call once, for now. TODO Multiple DOIs
                 doi = match[1]; 
-                altmetrics.getDataFromDoi(match[1], function(err, data){
-                  if (err !== null) {
-                    console.error(err);
-                    // What does process do?
-                    process.exit(-1); 
-                  }
+                if (options.altmetrics) altmetricsFromDoi(doi, cb);
 
-                  console.log('Data:', data);
-                  return cb(null, data);
-                });
-                response = true;
               }
             }
           });

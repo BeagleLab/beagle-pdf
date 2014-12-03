@@ -12,8 +12,9 @@
   "author": "Richard Littauer <richard.littauer@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^2.4.1",
     "accum-transform": "^1.0.2",
+    "doi-regex": "0.0.1",
+    "lodash": "^2.4.1",
     "pdfjs-dist-for-node": "^1.0.893"
   },
   "devDependencies": {},
