@@ -10,10 +10,10 @@ var altmetricsFromDoi = function(doi, cb) {
     if (err !== null) {
       console.error(err);
       // What does process do?
-      process.exit(-1); 
+      process.exit(-1);
     }
 
-    console.log('Data:', data);
+    // console.log('Altmetrics Data:', data);
     return cb(null, data);
   });
 }
@@ -25,13 +25,13 @@ var readPDF = function(documentObject, options, cb) {
 
   if (!documentObject) {
     console.log("No pdf");
-    throw new Error("no pdf"); 
+    throw new Error("no pdf");
   }
 
   // console.log('Document object', documentObject);
 
   pdfjs.getDocument(documentObject).then(function(pdf) {
-    
+
     //May not be useful at the moment.
     pdf.getMetadata().then(function(data){
       console.log('Metadata:', data);
@@ -42,18 +42,18 @@ var readPDF = function(documentObject, options, cb) {
     var pageInfo, doi, match;
 
     for (i = 1; i <= numPages; i++) {
-      pdf.getPage(i).then(function(page) {   
+      pdf.getPage(i).then(function(page) {
         page.getTextContent().then(function(textContent) {
           _.each(textContent.items, function(item){
             // TODO match[2] tracks .t001, .g001, etc. Capture these, they may be relevant
-            // to research. 
+            // to research.
             if (!!doiRegex.groups(item.str))
               match = doiRegex.groups(item.str)
 
             if (match && !response) {
               if (!doi) {
                 // Only call once, for now. TODO Multiple DOIs
-                doi = match[1]; 
+                doi = match[1];
                 if (options.altmetrics) altmetricsFromDoi(doi, cb);
 
               }
