@@ -13,9 +13,9 @@
   "license": "MIT",
   "dependencies": {
     "accum-transform": "^1.0.2",
-    "doi-regex": "0.0.1",
-    "lodash": "^2.4.1",
-    "pdfjs-dist-for-node": "^1.0.893"
+    "doi-regex": "0.1.2",
+    "lodash": "^3.3.1",
+    "pdfjs-dist-for-node": "^1.0.892-rc"
   },
   "devDependencies": {},
   "repository": {
