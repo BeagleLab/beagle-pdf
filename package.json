@@ -2,7 +2,7 @@
   "name": "beagle-pdf",
   "version": "0.0.0",
   "description": "Parse the title of a pdf",
-  "main": "index.js",
+  "main": "./index.js",
   "scripts": {
     "test": "node ./spec/beagle-pdf.tests.js"
   },
@@ -12,7 +12,7 @@
   "author": "Richard Littauer <richard.littauer@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "accum-transform": "^1.0.2",
+    "beagle-altmetrics": "0.0.2",
     "doi-regex": "0.1.2",
     "lodash": "^3.3.1",
     "pdfjs-dist-for-node": "^1.0.892-rc"
