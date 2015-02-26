@@ -12,7 +12,7 @@
   "author": "Richard Littauer <richard.littauer@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "beagle-altmetrics": "0.0.2",
+    "beagle-altmetrics": "0.0.3",
     "doi-regex": "0.1.2",
     "lodash": "^3.3.1",
     "pdfjs-dist-for-node": "^1.0.892-rc"
