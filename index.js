@@ -3,6 +3,8 @@ var altmetrics = require('beagle-altmetrics')
 var _ = require('lodash')
 var doiRegex = require('doi-regex')
 
+var response
+
 var altmetricsFromDoi = function (doi, cb) {
   response = true
   return altmetrics.getDataFromDoi(doi, function (err, data) {
@@ -16,7 +18,6 @@ var altmetricsFromDoi = function (doi, cb) {
   })
 }
 
-var response
 var getFingerprint = function (documentObject, cb) {
   if (!documentObject) throw new Error('No pdf provided')
 
@@ -35,6 +36,10 @@ var getMetadata = function (documentObject, cb) {
   })
 }
 
+var readPDFText = function (documentObject, options, cb) {
+  if (!documentObject) throw new Error('No pdf provided')
+
+  pdfjs.getDocument(documentObject).then(function (pdf) {
     var numPages = pdf.numPages
     // Define vars where they won't be redefined in each loop in if statements
     var doi, match
@@ -51,8 +56,8 @@ var getMetadata = function (documentObject, cb) {
             if (match && !response) {
               if (!doi) {
                 // Only call once, for now. TODO Multiple DOIs
+                response = true
                 doi = match[1]
-                var response = true
                 if (options.modules.altmetrics) altmetricsFromDoi(doi, cb)
               }
             }
@@ -60,12 +65,11 @@ var getMetadata = function (documentObject, cb) {
         })
       })
     }
-
-    if (!response) { return cb(null, null) }
+    if (!response) return { cb('Failed to find a DOI.') }
   })
 }
 
 exports.pdfjs = pdfjs
-exports.readPDF = readPDF
 exports.getFingerprint = getFingerprint
 exports.getMetadata = getMetadata
+exports.readPDFText = readPDFText
