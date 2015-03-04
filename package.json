@@ -17,7 +17,9 @@
     "lodash": "^3.3.1",
     "pdfjs-dist-for-node": "^1.0.892-rc"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "standard": "^2.10.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/BeagleLab/beagle-pdf.git"
