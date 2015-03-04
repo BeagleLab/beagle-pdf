@@ -65,7 +65,8 @@ var readPDFText = function (documentObject, options, cb) {
         })
       })
     }
-    if (!response) return { cb('Failed to find a DOI.') }
+    if (!response)
+      return cb('Failed to find a DOI.')
   })
 }
 
