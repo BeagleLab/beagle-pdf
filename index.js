@@ -17,6 +17,13 @@ var altmetricsFromDoi = function (doi, cb) {
 }
 
 var response
+var getFingerprint = function (documentObject, cb) {
+  if (!documentObject) throw new Error('No pdf provided')
+
+  pdfjs.getDocument(documentObject).then(function (pdf) {
+    return cb(null, pdf.fingerprint)
+  })
+}
 
 var readPDF = function (documentObject, options, cb) {
   if (!documentObject) {
