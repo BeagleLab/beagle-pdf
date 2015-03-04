@@ -25,17 +25,15 @@ var getFingerprint = function (documentObject, cb) {
   })
 }
 
-var readPDF = function (documentObject, options, cb) {
-  if (!documentObject) {
-    console.log('No pdf')
-    throw new Error('no pdf');
-  }
+var getMetadata = function (documentObject, cb) {
+  if (!documentObject) throw new Error('No pdf provided')
 
   pdfjs.getDocument(documentObject).then(function (pdf) {
-    // May not be useful at the moment.
     pdf.getMetadata().then(function (data) {
-      console.log('Metadata:', data)
+      return cb(null, data)
     })
+  })
+}
 
     var numPages = pdf.numPages
     // Define vars where they won't be redefined in each loop in if statements
@@ -69,3 +67,5 @@ var readPDF = function (documentObject, options, cb) {
 
 exports.pdfjs = pdfjs
 exports.readPDF = readPDF
+exports.getFingerprint = getFingerprint
+exports.getMetadata = getMetadata
