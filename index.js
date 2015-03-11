@@ -42,7 +42,7 @@ var readPDFText = function (documentObject, options, cb) {
   pdfjs.getDocument(documentObject).then(function (pdf) {
     var numPages = pdf.numPages
     // Define vars where they won't be redefined in each loop in if statements
-    var doi, match
+    var doi, match, j = 0
 
     for (var i = 1; i <= numPages; i++) {
       pdf.getPage(i).then(function (page) {
@@ -50,23 +50,21 @@ var readPDFText = function (documentObject, options, cb) {
           _.each(textContent.items, function (item) {
             // TODO match[2] tracks .t001, .g001, etc. Capture these, they may be relevant
             // to research.
-            if (doiRegex.groups(item.str))
-              match = doiRegex.groups(item.str)
-
-            if (match && !response) {
-              if (!doi) {
-                // Only call once, for now. TODO Multiple DOIs
-                response = true
-                doi = match[1]
-                if (options.modules.altmetrics) altmetricsFromDoi(doi, cb)
+            match = doiRegex.groups(item.str)
+            if (match && !doi) {
+              // Only call once, for now. TODO Multiple DOIs
+              doi = match[1]
+              if (options.modules.altmetrics) {
+                altmetricsFromDoi(doi, cb)
               }
             }
           })
+          j++
+          if (j == numPages && !doi) {
+            cb('Failed to find a DOI.')
+          }
         })
       })
-    }
-    if (!response) {
-      return cb('Failed to find a DOI.')
     }
   })
 }
