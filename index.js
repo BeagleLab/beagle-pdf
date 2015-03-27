@@ -10,8 +10,8 @@ var altmetricsFromDoi = function (doi, cb) {
   return altmetrics.getDataFromDoi(doi, function (err, data) {
     if (err !== null) {
       console.error(err)
-      // What does process do?
-      process.exit(-1)
+      // TODO What does process do?
+      // process.exit(-1)
     }
 
     return cb(null, data)
