@@ -82,19 +82,23 @@ var getHightlightCoords = function () {
   return {page: pageIndex, coords: selected}
 }
 
-var showHighlight = function (selected) {
+var showHighlight = function (selected, cb) {
   var pageIndex = selected.page
-  var page = window.PDFViewerApplication.pdfViewer.pages[pageIndex]
-  var pageElement = page.canvas.parentElement
-  var viewport = page.viewport
-  selected.coords.forEach(function (rect) {
-    var bounds = viewport.convertToViewportRectangle(rect)
-    var el = document.createElement('div')
-    el.setAttribute('style', 'position: absolute; background-color: rgba(238, 170, 0, .2);' +
-      'left:' + Math.min(bounds[0], bounds[2]) + 'px; top:' + Math.min(bounds[1], bounds[3]) + 'px;' +
-      'width:' + Math.abs(bounds[0] - bounds[2]) + 'px; height:' + Math.abs(bounds[1] - bounds[3]) + 'px;')
-    pageElement.appendChild(el)
-  })
+  if (pageIndex === window.PDFViewerApplication.pdfViewer._currentPageNumber - 1) {
+    var page = window.PDFViewerApplication.pdfViewer.pages[pageIndex]
+    var pageElement = page.canvas.parentElement
+    var viewport = page.viewport
+    selected.coords.forEach(function (rect) {
+      var bounds = viewport.convertToViewportRectangle(rect)
+      var el = document.createElement('div')
+      el.setAttribute('style', 'position: absolute; background-color: rgba(238, 170, 0, .2);' +
+        'left:' + Math.min(bounds[0], bounds[2]) + 'px; top:' + Math.min(bounds[1], bounds[3]) + 'px;' +
+        'width:' + Math.abs(bounds[0] - bounds[2]) + 'px; height:' + Math.abs(bounds[1] - bounds[3]) + 'px;')
+      pageElement.appendChild(el)
+      return cb()
+    })
+  }
+  return
 }
 
 exports.pdfjs = pdfjs
