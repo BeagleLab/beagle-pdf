@@ -23,6 +23,8 @@ var getFingerprint = function (documentObject, cb) {
 
   pdfjs.getDocument(documentObject).then(function (pdf) {
     return cb(null, pdf.fingerprint)
+  }).catch(function (err) {
+    return cb(err)
   })
 }
 
@@ -30,9 +32,12 @@ var getMetadata = function (documentObject, cb) {
   if (!documentObject) throw new Error('No pdf provided')
 
   pdfjs.getDocument(documentObject).then(function (pdf) {
-    pdf.getMetadata().then(function (data) {
-      return cb(null, data)
-    })
+    return pdf.getMetadata()
+  }).then(function (data) {
+    return cb(null, data)
+  }).catch(function (err) {
+    // Unable to get Document or metadata
+    return cb(err)
   })
 }
 
@@ -42,30 +47,37 @@ var readPDFText = function (documentObject, options, cb) {
   pdfjs.getDocument(documentObject).then(function (pdf) {
     var numPages = pdf.numPages
     // Define vars where they won't be redefined in each loop in if statements
-    var doi, match, j = 0
+    var doi
+    var match
+    var j = 0
 
     for (var i = 1; i <= numPages; i++) {
       pdf.getPage(i).then(function (page) {
-        page.getTextContent().then(function (textContent) {
-          _.each(textContent.items, function (item) {
-            // TODO match[2] tracks .t001, .g001, etc. Capture these, they may be relevant
-            // to research.
-            match = doiRegex.groups(item.str)
-            if (match && !doi) {
-              // Only call once, for now. TODO Multiple DOIs
-              doi = match[1]
-              if (options.modules.altmetrics) {
-                altmetricsFromDoi(doi, cb)
-              }
+        return page.getTextContent()
+      }).then(function (textContent) {
+        _.each(textContent.items, function (item) {
+          // TODO match[2] tracks .t001, .g001, etc. Capture these, they may be relevant
+          // to research.
+          match = doiRegex.groups(item.str)
+          if (match && !doi) {
+            // Only call once, for now. TODO Multiple DOIs
+            doi = match[1]
+            if (options.modules.altmetrics) {
+              altmetricsFromDoi(doi, cb)
             }
-          })
-          j++
-          if (j == numPages && !doi) {
-            cb('Failed to find a DOI.')
           }
         })
+        j++
+        if (j === numPages && !doi) {
+          cb('Failed to find a DOI.')
+        }
+      }).catch(function (err) {
+        return cb(err)
       })
     }
+  }).catch(function (err) {
+    // Unable to get document
+    return cb(err)
   })
 }
 
