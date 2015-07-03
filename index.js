@@ -107,7 +107,7 @@ var showHighlight = function (selected, cb) {
         'left:' + Math.min(bounds[0], bounds[2]) + 'px; top:' + Math.min(bounds[1], bounds[3]) + 'px;' +
         'width:' + Math.abs(bounds[0] - bounds[2]) + 'px; height:' + Math.abs(bounds[1] - bounds[3]) + 'px;')
       pageElement.appendChild(el)
-      return cb()
+      return cb && cb()
     })
   }
   return
