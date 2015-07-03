@@ -1,6 +1,6 @@
 {
   "name": "beagle-pdf",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Parse the title of a pdf",
   "main": "./index.js",
   "scripts": {
