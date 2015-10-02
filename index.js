@@ -2,6 +2,8 @@ var pdfjs = require('pdfjs-dist-for-node/build/pdf.combined.js')
 var altmetrics = require('beagle-altmetrics')
 var _ = require('lodash')
 var doiRegex = require('doi-regex')
+var async = require('async')
+var Promise = require('bluebird')
 
 var response
 
@@ -32,52 +34,68 @@ var getMetadata = function (documentObject, cb) {
   if (!documentObject) throw new Error('No pdf provided')
 
   pdfjs.getDocument(documentObject).then(function (pdf) {
-    return pdf.getMetadata()
-  }).then(function (data) {
-    return cb(null, data)
-  }).catch(function (err) {
-    // Unable to get Document or metadata
-    return cb(err)
+    pdf.getMetadata().then(function (data) {
+      return cb(null, data)
+    })
   })
 }
 
 var readPDFText = function (documentObject, options, cb) {
   if (!documentObject) throw new Error('No pdf provided')
 
-  pdfjs.getDocument(documentObject).then(function (pdf) {
-    var numPages = pdf.numPages
-    // Define vars where they won't be redefined in each loop in if statements
-    var doi
-    var match
-    var j = 0
+  function getAllDOIMatches (item, cb) {
+    // TODO match[2] tracks .t001, .g001, etc. Capture these, they may be relevant
+    // to research.
+    var match = doiRegex.groups(item.str)
 
-    for (var i = 1; i <= numPages; i++) {
-      pdf.getPage(i).then(function (page) {
-        return page.getTextContent()
-      }).then(function (textContent) {
-        _.each(textContent.items, function (item) {
-          // TODO match[2] tracks .t001, .g001, etc. Capture these, they may be relevant
-          // to research.
-          match = doiRegex.groups(item.str)
-          if (match && !doi) {
-            // Only call once, for now. TODO Multiple DOIs
-            doi = match[1]
-            if (options.modules.altmetrics) {
-              altmetricsFromDoi(doi, cb)
-            }
-          }
-        })
-        j++
-        if (j === numPages && !doi) {
-          cb('Failed to find a DOI.')
-        }
-      }).catch(function (err) {
-        return cb(err)
-      })
+    if (match) {
+      cb(null, match)
+      // This used to be in this function, but will be factored out
+      // if (options.modules.altmetrics) {
+      //   altmetricsFromDoi(doi, cb)
+      // }
+    } else {
+      cb(null)
     }
-  }).catch(function (err) {
-    // Unable to get document
-    return cb(err)
+  }
+
+  function getStringsFromPage (pdf, pageNum, callback) {
+    pdf.getPage(pageNum + 1).then(function (page) {
+      page.getTextContent().then(function (textContent) {
+        async.map(textContent.items, getAllDOIMatches, function (err, result) {
+          if (err) {
+            callback(err)
+          }
+
+          callback(null, result)
+        })
+      })
+    })
+  }
+
+  var mapIteratorCallback = function (arrayItem, cb) {
+    return cb(null, arrayItem)
+  }
+
+  // There is likely something wrong with this.
+  async.map(
+    pdfjs.getDocument(documentObject).then(function (pdf) {
+      return async.times(pdf.numPages, getStringsFromPage.bind(null, pdf), function (err, results) {
+        if (err) {
+          return cb('Error getting DOIs')
+        }
+        // This sucessrully returns arrays of strings from each page.
+        return cb(null, _.filter(results))
+      })
+    })
+  , mapIteratorCallback
+  , function (err, finalResult) {
+    if (err) { console.log('err', err)}
+    // This should be async, but it isn't.
+    console.log('Final Result is not async, and should be:', finalResult)
+    // This error should happen if there are NO results
+    //   cb('Failed to find a DOI.')
+    // console.log('hello')
   })
 }
 
